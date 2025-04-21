@@ -130,3 +130,19 @@ func (db *DB) Delete(key string) error {
 
 	return err
 }
+
+func (db DB) GetToastTempl() string {
+	return db.ToastTemplate
+}
+
+func (db *DB) SetToastTempl(tmpl string) {
+	db.ToastTemplate = tmpl
+}
+
+func (db DB) GetHyperTempl() string {
+	return db.HyperscriptTemplate
+}
+
+func (db *DB) SetHyperTempl(tmpl string) {
+	db.HyperscriptTemplate = tmpl
+}
