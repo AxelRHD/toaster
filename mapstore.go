@@ -10,8 +10,9 @@ type MapStore struct {
 	HyperscriptTemplate string
 }
 
-func CreateMapStore() MapStore {
-	return MapStore{
+func CreateMapStore() *MapStore {
+	return &MapStore{
+		Messages:            make(map[string]*Toast),
 		ToastTemplate:       toastTemplate,
 		HyperscriptTemplate: jsTemplate,
 	}
@@ -50,10 +51,10 @@ func (ms *MapStore) SetToastTempl(tmpl string) {
 	ms.ToastTemplate = tmpl
 }
 
-func (ms MapStore) GetJsTempl() string {
+func (ms MapStore) GetHyperTempl() string {
 	return ms.HyperscriptTemplate
 }
 
-func (ms *MapStore) SetJsTempl(tmpl string) {
+func (ms *MapStore) SetHyperTempl(tmpl string) {
 	ms.HyperscriptTemplate = tmpl
 }

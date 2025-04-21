@@ -28,8 +28,8 @@ type Store interface {
 	Delete(string) error
 	GetToastTempl() string
 	SetToastTempl(string)
-	GetJsTempl() string
-	SetJsTempl(string)
+	GetHyperTempl() string
+	SetHyperTempl(string)
 }
 
 type ToastLocation string

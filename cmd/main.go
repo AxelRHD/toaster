@@ -11,6 +11,11 @@ import (
 var store toaster.Store
 
 func main() {
+	withDbStore()
+	// withMapStore()
+}
+
+func withDbStore() {
 	store, err := toaster.ConnectDB("sqlite", "file:db.sqlite?_journal=WAL&_fk=1")
 	if err != nil {
 		log.Fatal(err)
@@ -46,12 +51,11 @@ func main() {
 	} else {
 		fmt.Println(t1.Render())
 	}
-
-	// withMapStore()
 }
 
 func withMapStore() {
-	store = &toaster.MapStore{}
+	store = toaster.CreateMapStore()
+
 	id, err := store.Add(toaster.New("Hello World"))
 	if err != nil {
 		log.Fatal(err)
