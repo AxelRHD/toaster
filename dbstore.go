@@ -1,7 +1,6 @@
 package toaster
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -49,7 +48,17 @@ func (db DB) CreateSchema() error {
 	return err
 }
 
-func (db *DB) Add(toast *Toast) (string, error) {
+func (db DB) New(msg string) *Toast {
+	return &Toast{
+		Message:             msg,
+		Location:            LOC_TOP_RIGHT,
+		Icon:                true,
+		ToastTemplate:       db.ToastTemplate,
+		HyperscriptTemplate: db.HyperscriptTemplate,
+	}
+}
+
+func (db *DB) Save(toast *Toast) (string, error) {
 	id := generateUniqueID()
 
 	cols := bqb.Optional("")
@@ -81,7 +90,6 @@ func (db *DB) Add(toast *Toast) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	fmt.Println(qry)
 
 	_, err = db.DB.Exec(qry)
 	if err != nil {
@@ -111,7 +119,7 @@ func (db *DB) Get(key string) (*Toast, error) {
 	}
 
 	toast.ToastTemplate = db.ToastTemplate
-	toast.JsTemplate = db.HyperscriptTemplate
+	toast.HyperscriptTemplate = db.HyperscriptTemplate
 
 	return &toast, nil
 }
@@ -123,8 +131,6 @@ func (db *DB) Delete(key string) error {
 	if err != nil {
 		return err
 	}
-
-	fmt.Println(qry)
 
 	_, err = db.DB.Exec(qry)
 

@@ -11,8 +11,8 @@ import (
 var store toaster.Store
 
 func main() {
-	withDbStore()
-	// withMapStore()
+	// withDbStore()
+	withMapStore()
 }
 
 func withDbStore() {
@@ -26,7 +26,7 @@ func withDbStore() {
 		log.Fatal(err)
 	}
 
-	id, err := store.Add(toaster.New("Hello you!"))
+	id, err := store.Save(store.New("Hello you!"))
 	if err != nil {
 		log.Fatal(err)
 	} else {
@@ -56,7 +56,7 @@ func withDbStore() {
 func withMapStore() {
 	store = toaster.CreateMapStore()
 
-	id, err := store.Add(toaster.New("Hello World"))
+	id, err := store.Save(store.New("Hello World"))
 	if err != nil {
 		log.Fatal(err)
 	}

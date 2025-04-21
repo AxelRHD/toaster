@@ -18,8 +18,20 @@ func CreateMapStore() *MapStore {
 	}
 }
 
-func (ms *MapStore) Add(toast *Toast) (string, error) {
+func (ms MapStore) New(msg string) *Toast {
+	return &Toast{
+		Message:             msg,
+		Location:            LOC_TOP_RIGHT,
+		Icon:                true,
+		ToastTemplate:       ms.ToastTemplate,
+		HyperscriptTemplate: ms.HyperscriptTemplate,
+	}
+}
+
+func (ms *MapStore) Save(toast *Toast) (string, error) {
 	id := generateUniqueID()
+
+	toast.ID = id
 
 	(*ms).Messages[id] = toast
 	return id, nil

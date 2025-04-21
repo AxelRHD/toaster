@@ -9,21 +9,22 @@ import (
 )
 
 type Toast struct {
-	ID            string        `json:"id" db:"id"`
-	Title         string        `json:"title,omitempty" db:"title"`
-	Message       string        `json:"message,omitempty" db:"message"`
-	Location      ToastLocation `json:"location,omitempty" db:"location"`
-	Icon          bool          `json:"icon" db:"icon"`
-	Dismissable   bool          `json:"dismissable" db:"dismissable"`
-	Type          ToastType     `json:"type,omitempty" db:"msg_type"`
-	CreatedAt     time.Time     `json:"created_at" db:"-"`
-	CreatedAtStr  string        `json:"-" db:"created_at"`
-	ToastTemplate string        `json:"-" db:"-"`
-	JsTemplate    string        `json:"-" db:"-"`
+	ID                  string        `json:"id" db:"id"`
+	Title               string        `json:"title,omitempty" db:"title"`
+	Message             string        `json:"message,omitempty" db:"message"`
+	Location            ToastLocation `json:"location,omitempty" db:"location"`
+	Icon                bool          `json:"icon" db:"icon"`
+	Dismissable         bool          `json:"dismissable" db:"dismissable"`
+	Type                ToastType     `json:"type,omitempty" db:"msg_type"`
+	CreatedAt           time.Time     `json:"created_at" db:"-"`
+	CreatedAtStr        string        `json:"-" db:"created_at"`
+	ToastTemplate       string        `json:"-" db:"-"`
+	HyperscriptTemplate string        `json:"-" db:"-"`
 }
 
 type Store interface {
-	Add(*Toast) (string, error)
+	New(string) *Toast
+	Save(*Toast) (string, error)
 	Get(string) (*Toast, error)
 	Delete(string) error
 	GetToastTempl() string
@@ -54,13 +55,14 @@ const (
 	jsTemplate    = "on load %s remove me"
 )
 
-func New(msg string) *Toast {
-	return &Toast{
-		Message:  msg,
-		Location: LOC_TOP_RIGHT,
-		Icon:     true,
-	}
-}
+// func New(msg string) *Toast {
+// 	return &Toast{
+// 		Message:  msg,
+// 		Location: LOC_TOP_RIGHT,
+// 		Icon:     true,
+// 		ToastTemplate: toastTemplate,
+// 	}
+// }
 
 func (t *Toast) SetTitle(title string) *Toast {
 	t.Title = title
@@ -121,14 +123,13 @@ func (t Toast) Render() string {
 		parts = append(parts, fmt.Sprintf("type: '%v'", t.Type))
 	}
 
-	fmt.Println("templ:", t.ToastTemplate)
 	return fmt.Sprintf(t.ToastTemplate, strings.Join(parts, ", "))
 }
 
 func (t Toast) RenderHyperscript() string {
 	msg := t.Render()
 
-	return fmt.Sprintf(t.JsTemplate, msg)
+	return fmt.Sprintf(t.HyperscriptTemplate, msg)
 }
 
 func generateUniqueID() string {
