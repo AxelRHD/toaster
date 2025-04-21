@@ -9,7 +9,9 @@ import (
 )
 
 type DB struct {
-	*sqlx.DB
+	DB                  *sqlx.DB
+	ToastTemplate       string
+	HyperscriptTemplate string
 }
 
 const (
@@ -24,7 +26,11 @@ func ConnectDB(driverName string, dataSourceName string) (*DB, error) {
 		return db, err
 	}
 
-	return &DB{sdb}, nil
+	return &DB{
+		DB:                  sdb,
+		ToastTemplate:       toastTemplate,
+		HyperscriptTemplate: jsTemplate,
+	}, nil
 }
 
 func (db DB) CreateSchema() error {
@@ -39,7 +45,7 @@ func (db DB) CreateSchema() error {
 		created_at TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL
 	)`
 
-	_, err := db.Exec(qry)
+	_, err := db.DB.Exec(qry)
 	return err
 }
 
@@ -77,7 +83,7 @@ func (db *DB) Add(toast *Toast) (string, error) {
 	}
 	fmt.Println(qry)
 
-	_, err = db.Exec(qry)
+	_, err = db.DB.Exec(qry)
 	if err != nil {
 		return "", err
 	}
@@ -104,6 +110,9 @@ func (db *DB) Get(key string) (*Toast, error) {
 		toast.CreatedAt = dt
 	}
 
+	toast.ToastTemplate = db.ToastTemplate
+	toast.JsTemplate = db.HyperscriptTemplate
+
 	return &toast, nil
 }
 
@@ -117,7 +126,7 @@ func (db *DB) Delete(key string) error {
 
 	fmt.Println(qry)
 
-	_, err = db.Exec(qry)
+	_, err = db.DB.Exec(qry)
 
 	return err
 }

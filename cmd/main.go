@@ -40,6 +40,13 @@ func main() {
 		fmt.Println(err)
 	}
 
+	t1, err := store.Get(id)
+	if err != nil {
+		log.Println(err)
+	} else {
+		fmt.Println(t1.Render())
+	}
+
 	// withMapStore()
 }
 

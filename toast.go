@@ -9,23 +9,27 @@ import (
 )
 
 type Toast struct {
-	ID           string        `json:"id" db:"id"`
-	Title        string        `json:"title,omitempty" db:"title"`
-	Message      string        `json:"message,omitempty" db:"message"`
-	Location     ToastLocation `json:"location,omitempty" db:"location"`
-	Icon         bool          `json:"icon" db:"icon"`
-	Dismissable  bool          `json:"dismissable" db:"dismissable"`
-	Type         ToastType     `json:"type,omitempty" db:"msg_type"`
-	CreatedAt    time.Time     `json:"created_at" db:"-"`
-	CreatedAtStr string        `json:"-" db:"created_at"`
-	ToastTempl   string        `json:"-" db:"-"`
-	JSTemplate   string        `json:"-" db:"-"`
+	ID            string        `json:"id" db:"id"`
+	Title         string        `json:"title,omitempty" db:"title"`
+	Message       string        `json:"message,omitempty" db:"message"`
+	Location      ToastLocation `json:"location,omitempty" db:"location"`
+	Icon          bool          `json:"icon" db:"icon"`
+	Dismissable   bool          `json:"dismissable" db:"dismissable"`
+	Type          ToastType     `json:"type,omitempty" db:"msg_type"`
+	CreatedAt     time.Time     `json:"created_at" db:"-"`
+	CreatedAtStr  string        `json:"-" db:"created_at"`
+	ToastTemplate string        `json:"-" db:"-"`
+	JsTemplate    string        `json:"-" db:"-"`
 }
 
 type Store interface {
 	Add(*Toast) (string, error)
 	Get(string) (*Toast, error)
 	Delete(string) error
+	GetToastTempl() string
+	SetToastTempl(string)
+	GetJsTempl() string
+	SetJsTempl(string)
 }
 
 type ToastLocation string
@@ -45,13 +49,16 @@ const (
 	TYPE_INFO    ToastType = "info"
 )
 
+const (
+	toastTemplate = "butterup.toast({ %s })"
+	jsTemplate    = "on load %s remove me"
+)
+
 func New(msg string) *Toast {
 	return &Toast{
-		Message:    msg,
-		Location:   LOC_TOP_RIGHT,
-		Icon:       true,
-		ToastTempl: "butterup.toast({ %s })",
-		JSTemplate: "on load %s remove me",
+		Message:  msg,
+		Location: LOC_TOP_RIGHT,
+		Icon:     true,
 	}
 }
 
@@ -114,13 +121,14 @@ func (t Toast) Render() string {
 		parts = append(parts, fmt.Sprintf("type: '%v'", t.Type))
 	}
 
-	return fmt.Sprintf(t.ToastTempl, strings.Join(parts, ", "))
+	fmt.Println("templ:", t.ToastTemplate)
+	return fmt.Sprintf(t.ToastTemplate, strings.Join(parts, ", "))
 }
 
-func (t Toast) RenderScript() string {
+func (t Toast) RenderHyperscript() string {
 	msg := t.Render()
 
-	return fmt.Sprintf(t.JSTemplate, msg)
+	return fmt.Sprintf(t.JsTemplate, msg)
 }
 
 func generateUniqueID() string {
